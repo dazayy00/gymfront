@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import UploadPhoto from "../components/UploadPhoto";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -7,6 +8,7 @@ const Admin = () => {
     email: "",
     phone: "",
   });
+  const [imageUrl, setImageUrl] = useState("");
 
   const fetchUsers = async () => {
     const res = await fetch("http://localhost:3000/api/users");
