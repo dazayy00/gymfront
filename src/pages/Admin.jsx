@@ -8,6 +8,7 @@ const Admin = () => {
     email: "",
     phone: "",
   });
+  
   const [imageUrl, setImageUrl] = useState("");
 
   const fetchUsers = async () => {
