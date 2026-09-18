@@ -1,18 +1,27 @@
 import { useState } from "react";
-
-import Login from "./pages/Login";
-import Access from "./pages/Access";
-import Admin from "./pages/Admin";
+import Login     from "./pages/Login";
+import Access    from "./pages/Access";
+import Admin     from "./pages/Admin";
 import UserProfile from "./pages/UserProfile";
-import POS from "./pages/POS";
+import POS       from "./pages/POS";
 import Dashboard from "./pages/Dashboard";
+import Products  from "./pages/Products";
+import Sales     from "./pages/Sales";
+import "./index.css";
+
+const NAV = [
+  { id: "dashboard", label: "Dashboard",     icon: "📊" },
+  { id: "access",    label: "Control Acceso", icon: "🚪" },
+  { id: "admin",     label: "Usuarios",       icon: "👥" },
+  { id: "products",  label: "Inventario",     icon: "📦" },
+  { id: "pos",       label: "Punto de Venta", icon: "🛒" },
+  { id: "sales",     label: "Ventas",         icon: "🧾" },
+  { id: "user",      label: "Credencial",     icon: "🪪" },
+];
 
 function App() {
-  const [logged, setLogged] = useState(
-    !!localStorage.getItem("token")
-  );
-
-  const [view, setView] = useState("dashboard");
+  const [logged, setLogged] = useState(!!localStorage.getItem("token"));
+  const [view,   setView]   = useState("dashboard");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -20,63 +29,58 @@ function App() {
   };
 
   if (!logged) {
+    return <Login onLogin={() => setLogged(true)} />;
+  }
+
+  /* La vista de Acceso QR ocupa toda la pantalla sin sidebar */
+  if (view === "access") {
     return (
-      <Login
-        onLogin={() => setLogged(true)}
-      />
+      <Access onBack={() => setView("dashboard")} />
     );
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#111",
-        color: "white",
-      }}
-    >
-      <nav
-        style={{
-          padding: "10px",
-          display: "flex",
-          gap: "10px",
-          flexWrap: "wrap",
-          borderBottom: "1px solid #333",
-        }}
-      >
-        <button onClick={() => setView("dashboard")}>
-          Dashboard
-        </button>
-        <button onClick={() => setView("access")}>
-          Acceso
-        </button>
-        <button onClick={() => setView("admin")}>
-          Admin
-        </button>
-        <button onClick={() => setView("user")}>
-          Credencial
-        </button>
-        <button onClick={() => setView("pos")}>
-          POS
-        </button>
-        <button
-          onClick={handleLogout}
-          style={{
-            marginLeft: "auto",
-            background: "#ef4444",
-            color: "white",
-          }}
-        >
-          Cerrar sesión
-        </button>
-      </nav>
+    <div className="app-layout">
+      {/* ── Sidebar ── */}
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-icon">🏋️</div>
+          <div>
+            <div className="sidebar-brand-name">GymPro</div>
+            <div className="sidebar-brand-sub">Panel de control</div>
+          </div>
+        </div>
 
-      <main style={{ padding: "20px" }}>
+        <nav className="sidebar-nav">
+          <span className="nav-label">Navegación</span>
+
+          {NAV.map((item) => (
+            <button
+              key={item.id}
+              className={`nav-item ${view === item.id ? "active" : ""}`}
+              onClick={() => setView(item.id)}
+            >
+              <span className="nav-item-icon">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="btn btn-danger btn-full btn-sm" onClick={handleLogout}>
+            🔒 Cerrar sesión
+          </button>
+        </div>
+      </aside>
+
+      {/* ── Main ── */}
+      <main className="main-content">
         {view === "dashboard" && <Dashboard />}
-        {view === "access" && <Access />}
-        {view === "admin" && <Admin />}
-        {view === "user" && <UserProfile />}
-        {view === "pos" && <POS />}
+        {view === "admin"     && <Admin />}
+        {view === "products"  && <Products />}
+        {view === "user"      && <UserProfile />}
+        {view === "pos"       && <POS />}
+        {view === "sales"     && <Sales />}
       </main>
     </div>
   );
